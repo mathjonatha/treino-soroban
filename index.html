@@ -468,6 +468,9 @@
             touch-action: manipulation;
         }
 
+        /* Garante que controles fixos sempre recebam eventos de ponteiro */
+        .controls { pointer-events: auto; }
+
         /* ── RESPONSIVE — tablet ── */
         @media (max-width: 900px) {
             /* Modal ocupa quase toda a largura */
@@ -961,12 +964,12 @@
         });
 
         // Toque no board = equivalente à barra de espaço
+        // Nota: NÃO chamamos e.preventDefault() para não bloquear o click
+        // sintético que o iOS usa para os botões fixos (controles, modal, offcanvas)
         document.getElementById('game-board').addEventListener('touchend', e => {
             const target = e.target;
             // Deixa botões e o input lidarem com seus próprios toques
             if (target.closest('button') || target.tagName === 'INPUT') return;
-
-            e.preventDefault(); // evita disparo duplo do click sintético
 
             // Se input de resposta está visível, foca ele
             if (answerArea.style.display !== 'none' && !isWaiting) {
@@ -984,7 +987,7 @@
             } else if (!isPlaying) {
                 runGame(false);
             }
-        }, { passive: false });
+        });
 
         centerInput.addEventListener('keydown', e => {
             if (e.key === 'Enter') { e.preventDefault(); checkAnswer(); }
