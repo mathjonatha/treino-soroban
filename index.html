@@ -958,7 +958,7 @@
 
         // Clicar em qualquer lugar do board quando o input está visível foca o input
         document.getElementById('game-board').addEventListener('click', e => {
-            if (answerArea.style.display !== 'none' && !isWaiting && e.target !== centerInput) {
+            if (answerArea.style.display === 'flex' && !isWaiting && e.target !== centerInput) {
                 centerInput.focus();
             }
         });
@@ -972,7 +972,7 @@
             if (target.closest('button') || target.tagName === 'INPUT') return;
 
             // Se input de resposta está visível, foca ele
-            if (answerArea.style.display !== 'none' && !isWaiting) {
+            if (answerArea.style.display === 'flex' && !isWaiting) {
                 centerInput.focus();
                 return;
             }
@@ -1002,7 +1002,7 @@
 
         document.addEventListener('keydown', e => {
             // Redireciona digitação para o input quando visível mas não focado
-            if (answerArea.style.display !== 'none' && !isWaiting && document.activeElement !== centerInput) {
+            if (answerArea.style.display === 'flex' && !isWaiting && document.activeElement !== centerInput) {
                 if (!e.metaKey && !e.ctrlKey && !e.altKey && e.code !== 'Space') {
                     if (e.key === 'Enter') { e.preventDefault(); checkAnswer(); return; }
                     if (e.key === 'Backspace') {
