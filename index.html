@@ -318,6 +318,11 @@
             color: var(--text) !important;
         }
 
+        .form-control.field-err {
+            border-color: #e53e3e !important;
+            box-shadow: 0 0 0 3px rgba(229,62,62,.15) !important;
+        }
+
         .form-check-input:checked { background-color: var(--accent) !important; border-color: var(--accent) !important; }
         [data-bs-theme="dark"] .form-check-input:not(:checked) { background-color: var(--surface2) !important; border-color: var(--border-hi) !important; }
 
@@ -814,6 +819,26 @@
         document.getElementById('cfg-font-size').addEventListener('change', e => {
             applyFontSize(e.target.value);
             saveSettings();
+        });
+
+        /* ── VALIDAÇÃO DOS CAMPOS NUMÉRICOS ── */
+        const cfgNumericRules = {
+            'cfg-digits':   { min: 1,  fallback: 1   },
+            'cfg-rows':     { min: 1,  fallback: 5   },
+            'cfg-flash':    { min: 1,  fallback: 700 },
+            'cfg-interval': { min: 0,  fallback: 300 },
+        };
+
+        Object.entries(cfgNumericRules).forEach(([id, { min, fallback }]) => {
+            document.getElementById(id).addEventListener('blur', function () {
+                const v = parseInt(this.value, 10);
+                if (isNaN(v) || v < min) {
+                    this.value = fallback;
+                    this.classList.add('field-err');
+                    setTimeout(() => this.classList.remove('field-err'), 900);
+                    saveSettings();
+                }
+            });
         });
 
         /* ── GAME ── */
