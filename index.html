@@ -461,6 +461,45 @@
         ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 3px; }
+
+        /* ── TOUCH ── */
+        /* Remove atraso de 300ms e zoom duplo-toque em elementos interativos */
+        body, #game-board, #btn-start-center, .ctrl-btn, .act-btn {
+            touch-action: manipulation;
+        }
+
+        /* ── RESPONSIVE — tablet ── */
+        @media (max-width: 900px) {
+            /* Modal ocupa quase toda a largura */
+            .modal-dialog { max-width: calc(100vw - 24px) !important; }
+            .modal-body   { max-height: 80vh; overflow-y: auto; }
+
+            /* Configurações vira coluna única: prévia abaixo */
+            .modal-body-grid { grid-template-columns: 1fr; }
+            .s-preview-panel {
+                border-left: none;
+                border-top: 1px solid var(--border);
+                padding-left: 0;
+                padding-top: 16px;
+            }
+            .s-preview-box { min-height: 160px; }
+        }
+
+        /* ── RESPONSIVE — mobile ── */
+        @media (max-width: 500px) {
+            /* Barra de controles menor */
+            .controls  { top: 10px; right: 10px; padding: 3px; gap: 1px; }
+            .ctrl-btn  { width: 30px; height: 30px; font-size: 11px; }
+            .ctrl-sep  { display: none; }
+
+            /* Modal com menos padding */
+            .modal-header { padding: 14px 16px 12px !important; }
+            .modal-body   { padding: 14px 16px 18px !important; }
+
+            /* Grid de configurações em coluna única */
+            .s-grid { grid-template-columns: 1fr; }
+            .s-block { margin-bottom: 16px; }
+        }
     </style>
 </head>
 <body>
@@ -920,6 +959,32 @@
                 centerInput.focus();
             }
         });
+
+        // Toque no board = equivalente à barra de espaço
+        document.getElementById('game-board').addEventListener('touchend', e => {
+            const target = e.target;
+            // Deixa botões e o input lidarem com seus próprios toques
+            if (target.closest('button') || target.tagName === 'INPUT') return;
+
+            e.preventDefault(); // evita disparo duplo do click sintético
+
+            // Se input de resposta está visível, foca ele
+            if (answerArea.style.display !== 'none' && !isWaiting) {
+                centerInput.focus();
+                return;
+            }
+
+            // Comportamento igual à barra de espaço
+            if (isSequencing) {
+                togglePause();
+            } else if (isWaiting) {
+                isWaiting = false;
+                isPlaying = false;
+                runGame(true);
+            } else if (!isPlaying) {
+                runGame(false);
+            }
+        }, { passive: false });
 
         centerInput.addEventListener('keydown', e => {
             if (e.key === 'Enter') { e.preventDefault(); checkAnswer(); }
